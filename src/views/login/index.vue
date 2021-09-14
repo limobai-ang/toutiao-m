@@ -64,7 +64,7 @@ export default {
   data () {
     return {
       loginForm: {
-        mobile: '17771166963',
+        mobile: '13911111111',
         code: '246810'
       },
       formRules: {
@@ -101,6 +101,8 @@ export default {
         return
       }
       this.setToken(req.data.data)
+      // 跳转回原来的页面
+      this.$router.back()
       this.$toast.success('登录成功')
     },
     // 表单验证失败时触发
