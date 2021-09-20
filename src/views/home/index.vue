@@ -60,19 +60,8 @@ export default {
   },
   data () {
     return {
-      active: 1,
-      UserChannel: [
-        // { id: '1', name: '推荐' },
-        // { id: '2', name: 'html' },
-        // { id: '3', name: 'css' },
-        // { id: '4', name: 'JavaScript' },
-        // { id: '5', name: 'vue' },
-        // { id: '6', name: 'axios' },
-        // { id: '7', name: 'java' },
-        // { id: '8', name: 'c' },
-        // { id: '9', name: 'c++' },
-        // { id: '10', name: 'c#' }
-      ],
+      active: 0,
+      UserChannel: [],
       isChannelEditShow: false
     }
   },

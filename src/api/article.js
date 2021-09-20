@@ -3,7 +3,7 @@ import request from '@/utils/request.js'
 
 // 获取频道新闻
 const getJournalism = params => {
-  return request.get('/mp/v1_0/articles', params)
+  return request.get('/v1_1/articles', { params })
 }
 
 export { getJournalism }

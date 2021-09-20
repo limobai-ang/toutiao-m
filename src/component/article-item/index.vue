@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="coverBox" v-if="articleContent.cover.type === 1">
-      <van-image fit="cover" src="https://img01.yzcdn.cn/vant/cat.jpeg" />
+      <van-image fit="cover" :src="articleContent.cover.images[0]" />
     </div>
     <div slot="label"><span>发布时间: {{articleContent.pubdate | relativeTime}}前</span></div>
   </van-cell>

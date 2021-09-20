@@ -18,7 +18,7 @@
 </template>
 
 <script>
-// import { getJournalism } from '@/api/article.js'
+import { getJournalism } from '@/api/article.js'
 import ArticleItem from '@/component/article-item'
 export default {
   name: 'ArticleList',
@@ -36,7 +36,8 @@ export default {
       finished: false,
       // 下拉绑定数据
       count: 0,
-      isLoading: false
+      isLoading: false,
+      timestamp: null
     }
   },
   methods: {
@@ -55,58 +56,27 @@ export default {
 
     */
     async onLoad () {
-      const obj = {
-        id: '66',
-        title:
-          '折回去和好几年就能看到拉进来的卡路里的那就按收到了安纳金烂大街爱上你的看书看就得了按开机了是你的卡死了的及拉开了你打开',
-        pubdate: '2021-09-15',
-        cover: {
-          type: 1,
-          images: ['https://img01.yzcdn.cn/vant/cat.jpeg']
-        }
-      }
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          // 把数据push到数中
-          this.list.push(obj)
-        }
-
-        // 加载状态结束
-        // 设置本次加载状态结束，它才可以判断是否需要加载下一次，否则就会永远的停在这里
-        this.loading = false
-        // 数据全部加载完成
-        if (this.list.length >= 40) {
-          this.finished = true
-        }
-      }, 1000)
-
       // 获取文章数据
-      //   const res = await getJournalism({
-      //     status: null,
-      //     channel_id: null,
-      //     page: 1,
-      //     per_page: 10,
-      //     response_type: '',
-      //     begin_pubdate: '',
-      //     end_pubdate: ''
-      //   }).catch(err => err)
-      //   // 抛出错误
-      //   console.log(res)
-      //   if (res.status !== 200) {
-      //     this.$notify('文章列表获取失败')
-      //   }
-      //   // 把数据添加进list数组
-      //   this.list.push(...res.data.results)
+      const res = await getJournalism({
+        channel_id: this.channel.id, // 频道 id
+        timestamp: this.timestamp || Date.now(), // 获取下一页数据的时间戳，Date.now() 表示获取当前最新数据
+        with_top: 1
+      }).catch(err => err)
+      // 抛出错误
+      console.log(res)
+      if (res.status !== 200) {
+        this.$notify('文章列表获取失败')
+      }
+      // 把数据添加进list数组
+      this.list.push(...res.data.data.results)
 
-      //   // 下拉刷新
-      //   // 设置本次加载状态结束，它才可以判断是否需要加载下一次，否则就会永远的停在这里
-      //   this.loading = false
-      //   //   // 数据全部加载完成
-      //   if (this.list.length >= 40) {
-      //     this.finished = true
-      //   }
+      // 下拉刷新
+      // 设置本次加载状态结束，它才可以判断是否需要加载下一次，否则就会永远的停在这里
+      this.loading = false
+      //   // 数据全部加载完成
+      if (this.list.length >= 10000) {
+        this.finished = true
+      }
     },
     onRefresh () {
       setTimeout(() => {

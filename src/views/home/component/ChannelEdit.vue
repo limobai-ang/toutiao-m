@@ -37,7 +37,9 @@
 </template>
 
 <script>
-import { getChannels, delChannel } from '@/api/comment.js'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/storage.js'
+import { getChannels, delChannel, addChannel } from '@/api/comment.js'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -58,14 +60,14 @@ export default {
     }
   },
   methods: {
-    onUserChannelClick (index, obj, type) {
+    async onUserChannelClick (index, obj, type) {
       // 编辑状态，删除频道   非编辑状态切换频道
       if (this.isEdit) {
         // 编辑状态
         if (!type && index !== 0) {
           this.removerChannel(index, obj)
         } else {
-          this.userChannels.push(this.undeterminedChannels[index])
+          this.addChannelFn(index, obj)
         }
       } else {
         // 非编辑状态
@@ -74,14 +76,28 @@ export default {
     },
     // 删除频道
     async removerChannel (index, obj) {
+      // 删除后面的 让选中项-1
       if (index < this.active) {
         this.$emit('minus')
       }
       // 删除数据的index位
       this.userChannels.splice(index, 1)
-      console.log(21313513155313)
       const res = await delChannel(obj.id).catch(err => err)
       console.log(res)
+    },
+    // 添加频道
+    async addChannelFn (index, obj) {
+      this.userChannels.push(this.undeterminedChannels[index])
+      // 如果已登录就添加到线上
+      if (this.token) {
+        const res = await addChannel({
+          channels: [{ id: obj.id, seq: this.userChannels.length }]
+        }).catch(err => err)
+        console.log(res)
+      } else {
+        // 未登录添加到本地存储
+        setItem('toutiao-m-channels', this.userChannels)
+      }
     },
     // 切换频道
     switchChannel (index) {
@@ -100,6 +116,8 @@ export default {
     this.getChannelsFn()
   },
   computed: {
+    ...mapState(['token']),
+    // 过滤出未添加的数据
     undeterminedChannels () {
       return this.ChannelsAll.filter(item => {
         return !this.userChannels.some(userItem => userItem.id === item.id)
