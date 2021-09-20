@@ -39,7 +39,7 @@
         </van-grid-item>
         <van-grid-item text="文字">
           <div slot="text">
-            <div class="count">{{ userInfo.like_count }}</div>
+            <div class="count">{{ Math.abs(userInfo.like_count )}}</div>
             <div class="text">获赞</div>
           </div>
         </van-grid-item>
