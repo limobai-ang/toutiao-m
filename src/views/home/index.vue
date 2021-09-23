@@ -49,7 +49,9 @@
 </template>
 
 <script>
-import { getChannel } from '@/api/comment.js'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage.js'
+import { getChannel } from '@/api/channel.js'
 import ArticleList from './component/articleList.vue'
 import ChannelEdit from './component/ChannelEdit.vue'
 export default {
@@ -67,17 +69,29 @@ export default {
   },
   methods: {
     async getChannelFn () {
-      const res = await getChannel().catch(err => err)
-      if (res.status !== 200) {
-        this.$notify('用户频道获取失败')
-        return
+      if (this.token) {
+        const res = await getChannel().catch(err => err)
+        if (res.status !== 200) {
+          this.$notify('用户频道获取失败')
+          return
+        }
+        console.log(res)
+        this.UserChannel = res.data.data.channels
+      } else {
+        if (getItem('toutiao-m-channels')) {
+          this.UserChannel = getItem('toutiao-m-channels')
+        } else {
+          const res = await getChannel().catch(err => err)
+          this.UserChannel = res.data.data.channels
+        }
       }
-      console.log(res)
-      this.UserChannel = res.data.data.channels
     }
   },
   created () {
     this.getChannelFn()
+  },
+  computed: {
+    ...mapState(['token'])
   }
 }
 </script>

@@ -10,18 +10,33 @@
         shape="round"
         @search="onSearch"
         @cancel="$router.back()"
+        @focus="onFocus"
       />
     </form>
     <!-- 搜索结果 -->
-    <search-result v-if="isResult"></search-result>
+    <search-result
+      v-if="isResult"
+      :searchContent="searchContent"
+    ></search-result>
     <!-- 搜索建议 -->
-    <search-associate v-if="isassociate"></search-associate>
+    <search-associate
+      v-else-if="searchContent"
+      :searchContent="searchContent"
+      @search="onSearch"
+    ></search-associate>
     <!-- 历史记录 -->
-    <search-history v-if="isHistory"></search-history>
+    <search-history
+      v-else
+      :searchHistory="searchHistory"
+      @delSearchHistory="delSearchHistory"
+      @delAllSearchHistory="delAllSearchHistory"
+      @search="onSearch"
+    ></search-history>
   </div>
 </template>
 
 <script>
+import { setItem, getItem } from '@/utils/storage.js'
 import SearchAssociate from './component/search-associate.vue'
 import SearchHistory from './component/search-history.vue'
 import SearchResult from './component/search-result.vue'
@@ -35,35 +50,47 @@ export default {
   },
   data () {
     return {
+      // 输入框的内容
       searchContent: '',
-      isassociate: false, // 联想模块的显示状态
-      isHistory: true, // 历史模块的显示状态
-      isResult: false
+      // 控制搜索结果页面的显示
+      isResult: false,
+      // 记录搜索结果
+      searchHistory: getItem('toutiao-m-searchHistory') || []
     }
   },
   methods: {
+    // 输入框按下回车
     onSearch (val) {
       if (val) {
-        this.isHistory = false
-        this.isassociate = false
+        this.searchContent = val
+        // 将搜索结果添加到数组
+        const index = this.searchHistory.indexOf(val)
+        if (index !== -1) {
+          this.searchHistory.splice(index, 1)
+        }
+        this.searchHistory.push(val)
         this.isResult = true
       }
+    },
+    // 获得焦点触发
+    onFocus () {
+      this.isResult = false
+    },
+    // 删除历史项
+    delSearchHistory (index) {
+      this.searchHistory.splice(index, 1)
+    },
+    // 删除全部
+    delAllSearchHistory () {
+      this.searchHistory.splice(0, this.searchHistory.length)
     }
   },
   watch: {
-    searchContent (newValue, oldValue) {
-      // console.log('searchContent被修改了', newValue, oldValue)
-      this.isResult = false
-      if (newValue) {
-        this.isHistory = false
-        this.isassociate = true
-      } else {
-        this.isHistory = true
-        this.isassociate = false
-      }
+    searchHistory (newName) {
+      setItem('toutiao-m-searchHistory', newName)
     }
   }
 }
 </script>
 
-<style></style>
+<style lang="less" scoped></style>

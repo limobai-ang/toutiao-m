@@ -7,22 +7,17 @@
         @click="isEditHistory = true"
       />
       <div v-if="isEditHistory">
-        <span>全部删除 </span>
-        <span  @click="isEditHistory = false">完成</span>
+        <span @click="$emit('delAllSearchHistory')">全部删除 </span>
+        <span @click="isEditHistory = false">完成</span>
       </div>
     </van-cell>
     <!-- 历史项 -->
-    <van-cell title="单元格">
-        <van-icon name="close" v-if="isEditHistory"/>
-    </van-cell>
-    <van-cell title="单元格">
-        <van-icon name="close" v-if="isEditHistory"/>
-    </van-cell>
-    <van-cell title="单元格">
-        <van-icon name="close" v-if="isEditHistory"/>
-    </van-cell>
-    <van-cell title="单元格">
-        <van-icon name="close" v-if="isEditHistory"/>
+    <van-cell :title="item" v-for="(item, index) in searchHistory" :key="index" @click.stop="$emit('search', item)">
+      <van-icon
+        name="close"
+        v-if="isEditHistory"
+        @click.stop="$emit('delSearchHistory', index)"
+      />
     </van-cell>
   </div>
 </template>
@@ -30,10 +25,18 @@
 <script>
 export default {
   name: 'SearchHistory',
+  props: {
+    searchHistory: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
       isEditHistory: false
     }
+  },
+  methods: {
   }
 }
 </script>

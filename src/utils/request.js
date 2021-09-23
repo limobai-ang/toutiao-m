@@ -1,10 +1,22 @@
 import axios from 'axios'
 import store from '@/store'
-
+import jsonBig from 'json-bigint'
 // 封装请求模块
 const request = axios.create({
   // 基础路径
-  baseURL: 'http://localhost:8080/toutiao'
+  baseURL: 'http://localhost:8080/toutiao',
+  // transformResponse 允许自定义原始的响应数据（字符串）
+  transformResponse: [function (data) {
+    try {
+      // 如果转换成功则返回转换的数据结果
+      return jsonBig.parse(data)
+    } catch (err) {
+      // 如果转换失败，则包装为统一数据格式并返回
+      return {
+        data
+      }
+    }
+  }]
 })
 
 // 请求拦截器

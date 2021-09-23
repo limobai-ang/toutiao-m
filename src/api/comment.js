@@ -1,27 +1,41 @@
+// 文章评论模块
 import request from '@/utils/request.js'
 
-// 获取全部频道
-const getChannels = () => {
-  return request.get('/v1_0/channels')
-}
-
-// 获取用户频道列表
-const getChannel = () => {
-  return request.get('/v1_0/user/channels')
-}
-
-// 删除用户指定频道
-const delChannel = params => {
-  return request.delete(`/v1_0/user/channels/${params}`)
-}
-
-// 添加用户频道
-const addChannel = data => {
+// 获取评论或评论回复
+const getcomment = params => {
   return request({
-    method: 'PATCH',
-    url: '/v1_0/user/channels',
+    method: 'GET',
+    url: '/v1_0/comments',
+    params
+  })
+}
+
+// 对评论或评论回复点赞
+const addCommentLike = commentId => {
+  return request({
+    method: 'POST',
+    url: '/v1_0/comment/likings',
+    data: {
+      target: commentId
+    }
+  })
+}
+
+// 取消对评论或评论回复点赞
+const delCommentLike = commentId => {
+  return request({
+    method: 'DELETE',
+    url: `/v1_0/comment/likings/${commentId}`
+  })
+}
+
+// 发布评论
+const addComment = data => {
+  return request({
+    method: 'POST',
+    url: '/v1_0/comments',
     data
   })
 }
 
-export { getChannels, getChannel, delChannel, addChannel }
+export { getcomment, addCommentLike, delCommentLike, addComment }

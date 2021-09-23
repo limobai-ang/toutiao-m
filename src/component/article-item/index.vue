@@ -1,9 +1,13 @@
 <template>
-  <van-cell :to="{ name: 'article', params: { articleId: articleContent.id }}">
+  <van-cell :to="{ name: 'article', params: { articleId: articleContent.art_id } }">
     <div slot="title">
       <p class="van-multi-ellipsis--l2">{{ articleContent.title }}</p>
       <div class="coverMultiBox" v-if="articleContent.cover.type === 3">
-        <div class="coverItem" v-for="(item, index) in articleContent.cover.images" :key="index">
+        <div
+          class="coverItem"
+          v-for="(item, index) in articleContent.cover.images"
+          :key="index"
+        >
           <van-image fit="cover" :src="item" />
         </div>
       </div>
@@ -11,7 +15,11 @@
     <div class="coverBox" v-if="articleContent.cover.type === 1">
       <van-image fit="cover" :src="articleContent.cover.images[0]" />
     </div>
-    <div slot="label"><span>发布时间: {{articleContent.pubdate | relativeTime}}前</span></div>
+    <div slot="label">
+      <span>{{ articleContent.aut_name }}</span> &nbsp;
+      <span>{{ articleContent.comm_count }}评论</span> &nbsp;
+      <span>{{ articleContent.pubdate | relativeTime }}前</span>
+    </div>
   </van-cell>
 </template>
 

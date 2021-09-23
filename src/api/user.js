@@ -18,4 +18,23 @@ const getUserInfo = () => {
   })
 }
 
-export { login, codes, getUserInfo }
+// 关注用户
+const addFollow = userId => {
+  return request({
+    method: 'POST',
+    url: '/v1_0/user/followings',
+    data: {
+      target: userId
+    }
+  })
+}
+
+// 取消关注用户
+const delFollow = userId => {
+  return request({
+    method: 'DELETE',
+    url: `/v1_0/user/followings/${userId}`
+  })
+}
+
+export { login, codes, getUserInfo, addFollow, delFollow }

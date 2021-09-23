@@ -30,7 +30,7 @@
         v-for="(item, index) in undeterminedChannels"
         :key="item.id"
         :text="item.name"
-        @click="onUserChannelClick(index, item, 1)"
+        @click="addChannelFn(index, item)"
       />
     </van-grid>
   </div>
@@ -39,7 +39,7 @@
 <script>
 import { mapState } from 'vuex'
 import { setItem } from '@/utils/storage.js'
-import { getChannels, delChannel, addChannel } from '@/api/comment.js'
+import { getChannels, delChannel, addChannel } from '@/api/channel.js'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -60,15 +60,12 @@ export default {
     }
   },
   methods: {
+    // 添加频道事件 判断是否是 编辑模式
     async onUserChannelClick (index, obj, type) {
       // 编辑状态，删除频道   非编辑状态切换频道
-      if (this.isEdit) {
+      if (this.isEdit && index !== 0) {
         // 编辑状态
-        if (!type && index !== 0) {
-          this.removerChannel(index, obj)
-        } else {
-          this.addChannelFn(index, obj)
-        }
+        this.removerChannel(index, obj)
       } else {
         // 非编辑状态
         this.switchChannel(index)
@@ -82,16 +79,21 @@ export default {
       }
       // 删除数据的index位
       this.userChannels.splice(index, 1)
-      const res = await delChannel(obj.id).catch(err => err)
-      console.log(res)
+      if (this.token) {
+        const res = await delChannel(obj.id).catch(err => err)
+        console.log(res)
+      } else {
+        // 未登录添加到本地存储
+        setItem('toutiao-m-channels', this.userChannels)
+      }
     },
     // 添加频道
-    async addChannelFn (index, obj) {
+    async addChannelFn (index, item) {
       this.userChannels.push(this.undeterminedChannels[index])
       // 如果已登录就添加到线上
       if (this.token) {
         const res = await addChannel({
-          channels: [{ id: obj.id, seq: this.userChannels.length }]
+          channels: [{ id: item.id, seq: this.userChannels.length }]
         }).catch(err => err)
         console.log(res)
       } else {
@@ -113,6 +115,7 @@ export default {
     }
   },
   created () {
+    // 获取全部频道
     this.getChannelsFn()
   },
   computed: {
