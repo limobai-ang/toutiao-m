@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { setUserProfile } from '@/api/user.js'
 export default {
   name: 'UpdataName',
   props: {
@@ -36,7 +37,18 @@ export default {
     }
   },
   methods: {
-    onClickRight () {
+    async onClickRight () {
+      this.$toast.loading({
+        message: '修改中...',
+        forbidClick: true
+      })
+      const res = await setUserProfile({ name: this.message }).catch(err => err)
+      console.log(res)
+      if (res.status !== 201) {
+        this.$toast.fail('修改失败')
+        return
+      }
+      this.$toast.success('修改成功')
       this.$emit('input', this.message)
       this.$emit('close')
     }
