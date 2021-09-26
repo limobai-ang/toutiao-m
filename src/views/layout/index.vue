@@ -1,7 +1,9 @@
 <template>
   <div>
     <!-- 子路由出口 -->
-    <router-view />
+    <keep-alive>
+      <router-view />
+    </keep-alive>
     <!-- 底部导栏 -->
     <van-tabbar route>
       <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>
@@ -16,8 +18,11 @@
 export default {
   name: 'Layout',
   data () {
-    return {
-    }
+    return {}
+  },
+  mounted () {
+    // 添加layout的缓存 (登录的时候清除了组件的缓存 让组件重新获取数据 页面渲染完毕后再次缓存组件)
+    this.$store.commit('addCachePages', 'Layout')
   }
 }
 </script>

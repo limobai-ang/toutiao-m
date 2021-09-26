@@ -1,5 +1,5 @@
 <template>
-  <div class="article-list">
+  <div class="article-list" ref="article-list">
     <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
       <van-list
         v-model="loading"
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash'
 import { getJournalism } from '@/api/article.js'
 import ArticleItem from '@/component/article-item'
 export default {
@@ -37,7 +38,8 @@ export default {
       // 下拉绑定数据
       count: 0,
       isLoading: false,
-      timestamp: null
+      timestamp: null,
+      scrollTop: 0
     }
   },
   methods: {
@@ -63,7 +65,6 @@ export default {
         with_top: 1
       }).catch(err => err)
       // 抛出错误
-      console.log(res)
       if (res.status !== 200) {
         this.$notify('文章列表获取失败')
       }
@@ -85,6 +86,16 @@ export default {
         this.count++
       }, 1000)
     }
+  },
+  mounted () {
+    const articleList = this.$refs['article-list']
+    articleList.onscroll = debounce(() => {
+      console.log(articleList.scrollTop)
+      this.scrollTop = articleList.scrollTop
+    }, 100)
+  },
+  activated () {
+    this.$refs['article-list'].scrollTop = this.scrollTop
   }
 }
 </script>

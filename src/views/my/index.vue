@@ -16,7 +16,13 @@
           :src="userInfo.photo"
         />
         <div slot="title" class="my-name">{{ userInfo.name }}</div>
-        <van-button class="my-editBtn" round size="small" @click="$router.push('/profile')">编辑资料</van-button>
+        <van-button
+          class="my-editBtn"
+          round
+          size="small"
+          @click="$router.push('/profile')"
+          >编辑资料</van-button
+        >
       </van-cell>
       <van-grid :border="false" class="data-info">
         <van-grid-item text="文字">
@@ -39,14 +45,25 @@
         </van-grid-item>
         <van-grid-item text="文字">
           <div slot="text">
-            <div class="count">{{ Math.abs(userInfo.like_count )}}</div>
+            <div class="count">{{ Math.abs(userInfo.like_count) }}</div>
             <div class="text">获赞</div>
           </div>
         </van-grid-item>
       </van-grid>
     </van-cell-group>
     <div v-else class="not-login">
-      <img src="./mobile.png" alt="登录" @click="$router.push('/login')" />
+      <img
+        src="./mobile.png"
+        alt="登录"
+        @click="
+          $router.push({
+            name: 'login',
+            query: {
+              redirect: '/my'
+            }
+          })
+        "
+      />
       <div class="text">登录/注册</div>
     </div>
     <van-grid :column-num="2" class="mb-4">
@@ -54,7 +71,7 @@
       <van-grid-item icon-prefix="iconfont icon" icon="lishi" text="历史" />
     </van-grid>
     <van-cell title="消息通知" is-link to="/" />
-    <van-cell class="mb-4" title="小智同学" is-link to="/" />
+    <van-cell class="mb-4" title="小智同学" is-link to="/chat" />
     <van-cell v-if="token" class="logout" title="退出登录" @click="logout" />
   </div>
 </template>
@@ -87,18 +104,16 @@ export default {
     // 获取用户信息
     async getUserInfoFn () {
       const res = await getUserInfo().catch(err => err)
-      if (res.status !== 200) {
-        this.$notify('用户信息获取失败')
-        return
-      }
       this.userInfo = res.data.data
     }
   },
   computed: {
     ...mapState(['token'])
   },
-  created () {
-    this.getUserInfoFn()
+  mounted () {
+    if (this.token) {
+      this.getUserInfoFn()
+    }
   }
 }
 </script>

@@ -95,14 +95,14 @@ export default {
         duration: 0
       })
       const req = await login(this.loginForm).catch(err => err)
-      console.log(req)
-      if (req.status !== 201) {
-        this.$toast.fail('登录失败，手机号或者验证码失败！')
-        return
-      }
       this.setToken(req.data.data)
+      // 清除layout的缓存 让它重新渲染
+      this.$store.commit('removeCachePages', 'Layout')
       // 跳转回原来的页面
-      this.$router.back()
+      // this.$router.back()
+      console.log(this.$route)
+      this.$router.push(this.$route.query.redirect || '/')
+      // 提示用户
       this.$toast.success('登录成功')
     },
     // 表单验证失败时触发
